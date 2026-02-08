@@ -2,6 +2,7 @@
 #include <vector>
 #include <windows.h>
 #include <cstdint>
+#include <cstdlib>
 
 class lifeGrid {
 private:
@@ -65,10 +66,21 @@ public:
         }
         std::cout << output;
     }
+    void populate() {
+        float perc = 0.3;
+        int r = rand() % (width*height);
+        for (int i = 0; i < static_cast<int>(perc * (width * height)); i++) {
+            while (getCellState(r % width, r / width) == 1) {
+                r = rand() % (width * height);
+            }
+            setCell(r % width, r / width, 1);
+
+        }
+    }
 };
 
 int main() {
-    lifeGrid gridMap(2000, 100);
+    lifeGrid gridMap(40, 20);
 
     //glider
     gridMap.setCell(1, 0, 1);
@@ -76,7 +88,7 @@ int main() {
     gridMap.setCell(0, 2, 1);
     gridMap.setCell(1, 2, 1);
     gridMap.setCell(2, 2, 1);
-
+    gridMap.populate();
     while (true) {
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0, 0 });
         gridMap.printGrid();
