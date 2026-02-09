@@ -132,6 +132,11 @@
     <ClCompile Include="basic.cpp" />
     <ClCompile Include="Project1.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine.h" />
+    <ClInclude Include="lifeGrid.h" />
+    <ClInclude Include="rules.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
