@@ -25,7 +25,9 @@ uint8_t SeedsRule::apply(uint8_t currentState, int neighbours) {
 std::string DayAndNightRule::getName() const {
     return "Day And Night";
 }
-
+std::array<float, 3> DayAndNightRule::getDefaultColour() {
+    return { 1.0f, 0.863f, 0.0f };
+}
 uint8_t DayAndNightRule::apply(uint8_t currentState, int neighbours) {
     if (currentState == 1) {
         switch (neighbours) {
@@ -96,4 +98,7 @@ uint8_t IceballsRule::apply(uint8_t currentState, int neighbours) {
     case 2: case 5: case 6: case 7: case 8: return 1;
     default: return 0;
     }
+}
+std::array<float, 3> IceballsRule::getDefaultColour() {
+    return { 1.0f,1.0f,1.0f };
 }

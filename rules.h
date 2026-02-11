@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <cstdint>
+#include <array>
 
 // big daddy class
 class basicAutomataRule {
@@ -8,6 +9,7 @@ public:
     virtual ~basicAutomataRule() = default; //deconstructor
     virtual std::string getName() const = 0; //basic definitions for methods, getname and apply required
     virtual std::string getDefaultHood() const { return "Moore"; }
+    virtual std::array<float, 3> getDefaultColour() { return { 0.0f, 1.0f, 1.0f }; }
     virtual uint8_t apply(uint8_t currentState, int neighbours) = 0;
 };
 
@@ -28,6 +30,7 @@ class DayAndNightRule : public basicAutomataRule {
 public:
     std::string getName() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;
+    std::array<float, 3> getDefaultColour() override;
 };
 //life without death
 class LifeWithoutDeathRule : public basicAutomataRule {
@@ -57,4 +60,5 @@ class IceballsRule : public basicAutomataRule {
 public:
     std::string getName() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;
+    std::array<float, 3> getDefaultColour() override;
 };
