@@ -130,10 +130,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="basic.cpp" />
+    <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="lifeGrid.cpp" />
     <ClCompile Include="Project1.cpp" />
+    <ClCompile Include="rules.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine.h" />
+    <ClInclude Include="GameEngine.h" />
     <ClInclude Include="lifeGrid.h" />
     <ClInclude Include="rules.h" />
   </ItemGroup>
