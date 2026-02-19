@@ -9,10 +9,16 @@ public:
     virtual ~basicAutomataRule() = default; //deconstructor
     virtual std::string getName() const = 0; //basic definitions for methods, getname and apply required
     virtual std::string getDefaultHood() const { return "Moore"; }
-    virtual std::array<float, 3> getDefaultColour() { return { 0.0f, 1.0f, 1.0f }; }
     virtual uint8_t apply(uint8_t currentState, int neighbours) = 0;
-};
+    virtual std::array<float, 3> getDefaultColour(uint8_t state)  {
+        switch (state) {
+        case 1: return { 0.0f, 1.0f, 1.0f };
+        default: return { 0.0,0.0f,1.0f };
+        }
 
+    }
+    
+};
 //conways
 class ConwayRule : public basicAutomataRule {
 public:
@@ -30,7 +36,7 @@ class DayAndNightRule : public basicAutomataRule {
 public:
     std::string getName() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;
-    std::array<float, 3> getDefaultColour() override;
+    std::array<float, 3> getDefaultColour(uint8_t state) override;
 };
 //life without death
 class LifeWithoutDeathRule : public basicAutomataRule {
@@ -60,5 +66,12 @@ class IceballsRule : public basicAutomataRule {
 public:
     std::string getName() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;
-    std::array<float, 3> getDefaultColour() override;
+    std::array<float, 3> getDefaultColour(uint8_t state) override;
+};
+class BihamMiddletonLevineTrafficRule : public basicAutomataRule {
+public:
+    std::string getName() const override;
+    uint8_t apply(uint8_t currentState, int neighbours) override;
+    std::array<float, 3> getDefaultColour(uint8_t state) override;
+    
 };

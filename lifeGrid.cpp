@@ -121,3 +121,77 @@ void lifeGrid::invert() {//woah...crazy...
         grid[i] = (grid[i] == 0) ? 1 : 0;
     }
 }
+void BihamMiddletonLevineGrid::calcNext(int x, int y, bool goingRight) {
+    int index = y * width + x;
+    uint8_t cellValue = grid[index];
+    if (goingRight) {
+        if (cellValue == 1) { // car going right
+            int targetIdx;
+            if (x == width - 1) {
+                targetIdx = y * width; // wrap to the left
+            }
+            else {
+                targetIdx = index + 1;
+            }
+
+            // check if next spot occupied
+            if (grid[targetIdx] == 0) {
+                next[targetIdx] = 1;
+            }
+            else {
+                next[index] = 1; // dont move
+            }
+        }
+        else if (cellValue == 2) {
+            next[index] = 2; // copy other car
+        }
+    }
+    else {
+        if (cellValue == 2) { // car going down
+            int targetIdx;
+            if (y == height - 1) {
+                targetIdx = x; // wrap to the top
+            }
+            else {
+                targetIdx = index + width;
+            }
+
+            if (grid[targetIdx] == 0) {
+                next[targetIdx] = 2;
+            }
+            else {
+                next[index] = 2;
+            }
+        }
+        else if (cellValue == 1) {
+            next[index] = 1; // copy other car
+        }
+    }
+}
+
+void BihamMiddletonLevineGrid::update(basicAutomataRule* currentRule) {
+    if (!currentRule) return;
+    std::fill(next.begin(), next.end(), 0);
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            calcNext(x, y, true);
+        }
+    }
+    std::swap(grid, next);
+    std::fill(next.begin(), next.end(), 0);
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            calcNext(x, y, false);
+        }
+    }
+    std::swap(grid, next);
+}
+void BihamMiddletonLevineGrid::populate(float perc) {
+    for (int i = 0; i < width * height; i++) {
+        if ((float)rand() / RAND_MAX < perc)
+            grid[i] = (rand() % 2 == 0) ? 1 : 2;
+        else
+            grid[i] = 0;
+    }
+   
+}

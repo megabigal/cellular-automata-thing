@@ -25,7 +25,7 @@ uint8_t SeedsRule::apply(uint8_t currentState, int neighbours) {
 std::string DayAndNightRule::getName() const {
     return "Day And Night";
 }
-std::array<float, 3> DayAndNightRule::getDefaultColour() {
+std::array<float, 3> DayAndNightRule::getDefaultColour(uint8_t state) {
     return { 1.0f, 0.863f, 0.0f };
 }
 uint8_t DayAndNightRule::apply(uint8_t currentState, int neighbours) {
@@ -99,6 +99,21 @@ uint8_t IceballsRule::apply(uint8_t currentState, int neighbours) {
     default: return 0;
     }
 }
-std::array<float, 3> IceballsRule::getDefaultColour() {
+std::array<float, 3> IceballsRule::getDefaultColour(uint8_t state) {
     return { 1.0f,1.0f,1.0f };
+}
+std::string BihamMiddletonLevineTrafficRule::getName() const {
+    return "Biham–Middleton–Levine traffic Model";
+}
+
+uint8_t BihamMiddletonLevineTrafficRule::apply(uint8_t currentState, int neighbours) {
+    if (currentState == 1) return 1;
+    return 0;
+}
+std::array<float, 3> BihamMiddletonLevineTrafficRule::getDefaultColour(uint8_t state) {
+    switch (state) {
+    case 1: return { 0.0f, 0.0f, 1.0f };
+    case 2: return { 1.0f,0.0f,0.0f };
+    default: return { 0.0,0.0f,1.0f };
+    }
 }
