@@ -1,5 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Vertex.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include "lifeGrid.h"
@@ -25,6 +27,7 @@ private:
     int currentInput = 1;
     bool startTiming = false;
     std::array<float, 3>  userColour = { 0.0f,1.0f,1.0f };
+    sf::VertexArray gridVertices{ sf::PrimitiveType::Triangles };
    // int* width = &gridMap.getWidth();
    // int* height = &gridMap.getHeight();
     enum class automataMenu {LifeLike, OneDimension, Odd2D};
@@ -42,6 +45,7 @@ private:
     void render2DUI(float dt);
     void renderOdd2DUI(float dt);
     void render1DUI(float dt);
+    void renderHelper(float dt);
     std::string getTypeName(automataMenu current) {
         switch (current) {
         case automataMenu::LifeLike: return "LifeLike";

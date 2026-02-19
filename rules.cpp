@@ -57,8 +57,17 @@ uint8_t BriansBrainRule::apply(uint8_t currentState, int neighbours) {
     if (currentState == 1) return 2;//dying
     return 0;
 }
-
-// ulam-wuarburton
+std::array<float, 3> BriansBrainRule::getDefaultColour(uint8_t state) {
+    switch (state) {
+    case 1: return { 0.0f, 0.0f, 1.0f };
+    case 2: return { 1.0f, 1.0f, 1.0f };
+    default: return { 0.0,0.0f,1.0f };
+	}
+}
+int BriansBrainRule::getMaxState() const {
+    return 2;
+}
+// ulam-warburton
 std::string UlamWarburtonRule::getName() const {
     return "Ulam-Warburton";
 }
@@ -102,6 +111,58 @@ uint8_t IceballsRule::apply(uint8_t currentState, int neighbours) {
 std::array<float, 3> IceballsRule::getDefaultColour(uint8_t state) {
     return { 1.0f,1.0f,1.0f };
 }
+//star wars
+std::string StarWarsRule::getName() const {
+    return "Star Wars";
+}
+
+uint8_t  StarWarsRule::apply(uint8_t currentState, int neighbours) {
+    if (currentState == 0 && neighbours == 2) return 1;
+    if (currentState == 1) {
+        switch (neighbours) {
+        case 3: case 4: case 5: return 1;
+        default: return 2;
+        }
+    }
+    if (currentState == 2)
+        return 4;
+    return 0;
+}
+std::array<float, 3>  StarWarsRule::getDefaultColour(uint8_t state) {
+    switch (state) {
+    case 1: return { 1.0f, 1.0f, 0.0f };
+    case 2: return { 1.0f, 0.498f, 0.0f };
+	case 4: return { 1.0f, 0.0f, 0.0f };
+    default: return { 0.0,0.0f,1.0f };
+    }
+}
+int StarWarsRule::getMaxState() const {
+    return 4;
+}
+//greenberg hastings
+std::string GreenbergHastingsRule::getName() const {
+    return "Greenberg-Hastings";
+}
+uint8_t GreenbergHastingsRule::apply(uint8_t currentState, int neighbours) {
+    if (currentState == 0 && neighbours > 0) return 1;
+    if (currentState == 1) return 2;
+    if (currentState == 2) return 0;
+    return 0;
+}
+std::array<float, 3> GreenbergHastingsRule::getDefaultColour(uint8_t state) {
+    switch (state) {
+    case 1: return { 0.0f, 1.0f, 0.0f };
+    case 2: return { 0.0f, 0.0f, 1.0f };
+    default: return { 1.0,0.0f,0.0f };
+    }
+}
+std::string GreenbergHastingsRule::getDefaultHood() const {
+    return "Neumann";
+}
+int GreenbergHastingsRule::getMaxState() const {
+    return 2;
+}
+//Biham-Middleton-Levine traffic model
 std::string BihamMiddletonLevineTrafficRule::getName() const {
     return "Biham–Middleton–Levine traffic Model";
 }
@@ -116,4 +177,45 @@ std::array<float, 3> BihamMiddletonLevineTrafficRule::getDefaultColour(uint8_t s
     case 2: return { 1.0f,0.0f,0.0f };
     default: return { 0.0,0.0f,1.0f };
     }
+}
+
+int BihamMiddletonLevineTrafficRule::getMaxState() const {
+    return 2;
+}
+//Nagel–Schreckenberg
+std::string NagelSchreckenbergTrafficRule::getName() const {
+    return "Nagel–Schreckenberg traffic Model";
+}
+
+uint8_t NagelSchreckenbergTrafficRule::apply(uint8_t currentState, int neighbours) {
+    if (currentState == 1) return 1;
+    return 0;
+}
+std::array<float, 3> NagelSchreckenbergTrafficRule::getDefaultColour(uint8_t state) {
+    //return { 1.0f,1.0f,1.0f };
+    switch (state) {
+    case -1: return { 0.0f, 0.0f, 0.4f }; 
+    case 1: return { 0.0f, 0.2f, 0.7f }; 
+    case 2: return { 0.0f, 0.5f, 1.0f }; 
+    case 3: return { 0.0f, 0.8f, 1.0f }; 
+    case 4: return { 0.0f, 1.0f, 1.0f }; 
+    default: return { 0.0f, 1.0f, 1.0f }; 
+    }
+
+}
+
+int NagelSchreckenbergTrafficRule::getMaxState() const {
+    return 5;
+}
+
+int WireWorldRule::getMaxState() const {
+    return 4;
+}
+int WireWorldRule::apply(uint8_t currentState, int neighbours) {
+    if (currentState == 0) return 0;
+    if (currentState == 1) return 2;
+    if (currentState == 2) return 3;
+    if (currentState == 3 && neighbours == 2 && neighbours == 1) return 1;
+    else return 3;
+    return 0;
 }

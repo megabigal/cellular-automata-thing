@@ -18,7 +18,8 @@ GameEngine::GameEngine(unsigned int w, unsigned int h)
     rules.push_back(std::make_unique<UlamWarburtonRule>());
     rules.push_back(std::make_unique<MazectricRule>());
     rules.push_back(std::make_unique<IceballsRule>());
-
+    rules.push_back(std::make_unique<StarWarsRule>());
+	rules.push_back(std::make_unique<GreenbergHastingsRule>());
     neighbourhood = gridMap->isMoore() ? "Moore" : "Neumann";
 }
 
@@ -39,21 +40,29 @@ void GameEngine::handleEvents() {
         if (state == SimState::Empty) state = SimState::Paused;
     }
 }
-
-void  GameEngine::render2DUI(float dt) {
+void GameEngine::renderHelper(float dt) {
     if (ImGui::BeginCombo("Rule", rules[currentRuleIndex]->getName().c_str())) { //rule dropdown
         for (int i = 0; i < (int)rules.size(); i++) {
             if (ImGui::Selectable(rules[i]->getName().c_str(), currentRuleIndex == i)) {
+                std::string ruleName = rules[i]->getName();
+
+                if (ruleName == "Nagel–Schreckenberg traffic Model" && currentRuleIndex != i) {
+                    gridMap = std::make_unique<NagelSchreckenbergGrid>(window.getSize().x / 10, window.getSize().y / 10);
+                }
+                else if (ruleName == "Biham–Middleton–Levine traffic Model" && currentRuleIndex != i) {
+                    gridMap = std::make_unique<BihamMiddletonLevineGrid>(window.getSize().x / 10, window.getSize().y / 10);
+                    
+                }
                 currentRuleIndex = i;
                 gridMap->setHood(rules[currentRuleIndex]->getDefaultHood());
-               // userColour = rules[currentRuleIndex]->getDefaultColour();
+                // userColour = rules[currentRuleIndex]->getDefaultColour();
             }
         }
         neighbourhood = gridMap->isMoore() ? "Moore" : "Neumann";
 
         ImGui::EndCombo();
     }
-    
+
     const char* label = (state == SimState::Running) ? "Pause" : "Start";
     if (ImGui::Button(label, ImVec2(100, 0))) {
         if (state == SimState::Empty) {
@@ -73,6 +82,14 @@ void  GameEngine::render2DUI(float dt) {
         gridMap->clear();
         state = SimState::Empty;
     }
+    ImGui::SliderFloat("fill ratio", &popValue, 0.0f, 1.0f);
+    ImGui::SliderFloat("Speed", &speed, 0.0f, 0.5f);
+    ImGui::SliderInt("Input", &currentInput, 0, rules[currentRuleIndex].get()->getMaxState());
+
+
+}
+void  GameEngine::render2DUI(float dt) {
+	renderHelper(dt);
     if (ImGui::Button("invert")) {
         gridMap->invert();
     }
@@ -86,8 +103,7 @@ void  GameEngine::render2DUI(float dt) {
         neighbourhood = gridMap->isMoore() ? "Moore" : "Neumann";
     }
 
-    ImGui::SliderFloat("Speed", &speed, 0.0f, 0.5f);
-    ImGui::SliderFloat("fill ratio", &popValue, 0.0f, 1.0f);
+    
     //ImGui::SliderInt("width", width, 0, 150);
   //  ImGui::SliderInt("height", width, 0, 150);
     ImGui::ColorEdit3("Primary Color", &(userColour[0]));
@@ -109,30 +125,7 @@ void  GameEngine::render1DUI(float dt) {
     return;
 }
 void  GameEngine::renderOdd2DUI(float dt) {
-    if (ImGui::BeginCombo("Rule", rules[currentRuleIndex]->getName().c_str())) { //rule dropdown
-        for (int i = 0; i < (int)rules.size(); i++) {
-            if (ImGui::Selectable(rules[i]->getName().c_str(), currentRuleIndex == i)) {
-                currentRuleIndex = i;
-                gridMap->setHood(rules[currentRuleIndex]->getDefaultHood());
-              //  userColour = rules[currentRuleIndex]->getDefaultColour();
-            }
-        }
-        neighbourhood = gridMap->isMoore() ? "Moore" : "Neumann";
-
-        ImGui::EndCombo();
-    }
-
-    const char* label = (state == SimState::Running) ? "Pause" : "Start";
-    if (ImGui::Button(label, ImVec2(100, 0))) {
-        if (state == SimState::Empty) {
-            gridMap->populate(popValue);
-            state = SimState::Running;
-        }
-        else {
-            state = (state == SimState::Running) ? SimState::Paused : SimState::Running;
-        }
-
-    }
+    renderHelper(dt);
     if (ImGui::Button("car")) {
         if (currentInput == 1)
             currentInput = 2;
@@ -140,8 +133,7 @@ void  GameEngine::renderOdd2DUI(float dt) {
             currentInput = 1;
     }
     
-    ImGui::SliderFloat("fill ratio", &popValue, 0.0f, 1.0f);
-    ImGui::SliderFloat("Speed", &speed, 0.0f, 0.5f);
+    
 }
 void GameEngine::renderUI(float dt) {
     ImGui::SFML::Update(window, sf::seconds(dt));
@@ -190,42 +182,72 @@ void GameEngine::changeMode(automataMenu a) {
         rules.push_back(std::make_unique<UlamWarburtonRule>());
         rules.push_back(std::make_unique<MazectricRule>());
         rules.push_back(std::make_unique<IceballsRule>());
+        rules.push_back(std::make_unique<StarWarsRule>());
+        rules.push_back(std::make_unique<GreenbergHastingsRule>());
     }
     if (currentType == automataMenu::Odd2D) {
         gridMap = std::make_unique<BihamMiddletonLevineGrid>(window.getSize().x / 10, window.getSize().y / 10);
         rules.push_back(std::make_unique<BihamMiddletonLevineTrafficRule>());
+        rules.push_back(std::make_unique<NagelSchreckenbergTrafficRule>());
 
     }
 
     neighbourhood = gridMap->isMoore() ? "Moore" : "Neumann";
 }
+
+
 void GameEngine::renderGrid() {
-    sf::RectangleShape shape(sf::Vector2f(cellSize - 1.0f, cellSize - 1.0f));
-    
-    for (int y = 0; y < gridMap->getHeight(); y++) {
-        for (int x = 0; x < gridMap->getWidth(); x++) {
+    int width = gridMap->getWidth();
+    int height = gridMap->getHeight();
+
+    gridVertices.resize(width * height * 6);
+    size_t vertexIndex = 0;
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
             uint8_t cellState = gridMap->getCellState(x, y);
 
             if (cellState > 0) {
-                shape.setPosition({ x * cellSize, y * cellSize });
-                std::array<float, 3> rgb =  rules[currentRuleIndex].get()->getDefaultColour(cellState);
-                sf::Color cellColour(
+                
+                float left = x * cellSize;
+                float top = y * cellSize;
+                float right = left + cellSize - 1.0f;
+                float bottom = top + cellSize - 1.0f;
+
+                
+                auto rgb = rules[currentRuleIndex]->getDefaultColour(cellState);
+                sf::Color color(
                     static_cast<uint8_t>(rgb[0] * 255.0f),
                     static_cast<uint8_t>(rgb[1] * 255.0f),
-                    static_cast<uint8_t>(rgb[2] * 255.0f),
-                    255 
+                    static_cast<uint8_t>(rgb[2] * 255.0f)
                 );
-                if (cellState == 1) {
-                   // shape.setFillColor(primaryColour); // Aliv
-                    shape.setFillColor(cellColour);
-                }
-                else if (cellState == 2) {
-                  //  shape.setFillColor(primaryColour * sf::Color(120, 120, 120)); // Dying
-                    shape.setFillColor(cellColour);
-                }
-                window.draw(shape);
+
+                // triangle 1
+                gridVertices[vertexIndex++].position = { left, top };
+                gridVertices[vertexIndex - 1].color = color;
+
+                gridVertices[vertexIndex++].position = { right, top };
+                gridVertices[vertexIndex - 1].color = color;
+
+                gridVertices[vertexIndex++].position = { left, bottom };
+                gridVertices[vertexIndex - 1].color = color;
+
+                // triangle 2
+                gridVertices[vertexIndex++].position = { left, bottom };
+                gridVertices[vertexIndex - 1].color = color;
+
+                gridVertices[vertexIndex++].position = { right, top };
+                gridVertices[vertexIndex - 1].color = color;
+
+                gridVertices[vertexIndex++].position = { right, bottom };
+                gridVertices[vertexIndex - 1].color = color;
             }
         }
+    }
+
+    //draw them all 
+    if (vertexIndex > 0) {
+        window.draw(&gridVertices[0], vertexIndex, sf::PrimitiveType::Triangles);
     }
 }
 
@@ -238,24 +260,27 @@ void GameEngine::run() {
         if (state == SimState::Running) {
             timer += dt;
             if (timer >= speed) {
-                auto start = std::chrono::high_resolution_clock::now();
-                gridMap->update(rules[currentRuleIndex].get());
-                auto end = std::chrono::high_resolution_clock::now();
-
-                std::chrono::duration<double, std::milli> elapsed = end - start;
-                lastUpdateMs = elapsed.count();
-
                 
-                smoothedUpdateMs = (smoothedUpdateMs * 0.9) + (lastUpdateMs * 0.1);
+                gridMap->update(rules[currentRuleIndex].get());
+                
 
                 timer = 0;
             }
         }
 
         renderUI(dt);
-
+        
         window.clear(sf::Color(0, 0, 0));
+        auto start = std::chrono::high_resolution_clock::now();
         renderGrid();
+        
+        auto end = std::chrono::high_resolution_clock::now();
+
+        std::chrono::duration<double, std::milli> elapsed = end - start;
+        lastUpdateMs = elapsed.count();
+
+
+        smoothedUpdateMs = (smoothedUpdateMs * 0.9) + (lastUpdateMs * 0.1);
         ImGui::SFML::Render(window);
         window.display();
     }

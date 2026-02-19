@@ -195,3 +195,50 @@ void BihamMiddletonLevineGrid::populate(float perc) {
     }
    
 }
+
+// NagelSchreckenbergGrid
+void NagelSchreckenbergGrid::calcNext(int x, int y) {
+    
+    int index = y * width + x;
+    if (grid[index] == 0) //empty cell
+        return;
+    int velocity = grid[index];
+    if (velocity < 0) //velocity is stored as -1 to differentiate it from empty cells
+        velocity = 0;
+    if (velocity < maxVelocity)
+		velocity++; // accelerate
+    
+    for (int i = 1; i <= velocity; i++){ //check it does not pass the car in front
+        int checkIndex = ((x + i) % width) + y * width;//wraps around
+        if (grid[checkIndex] != 0) {
+            velocity = i - 1;
+            break;
+        }
+    }
+    
+    if (velocity > 0)
+        velocity -= ((float)rand() / RAND_MAX < p) ? 1 : 0; //randomly slow down for some reason lol
+    
+    int nextIndex = ((x + velocity) % width) + y * width; 
+    if (velocity == 0)
+        next[nextIndex] = -1;
+    else
+        next[nextIndex] = velocity;
+    
+}
+
+
+void NagelSchreckenbergGrid::update(basicAutomataRule* currentRule) {
+    if (!currentRule) return;
+    std::fill(next.begin(), next.end(), 0);
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            calcNext(x, y);
+        }
+    }
+    std::swap(grid, next);
+    
+}
+void NagelSchreckenbergGrid::setMaxVelocity(int maxV) {
+    maxVelocity = maxV;
+}

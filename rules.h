@@ -17,6 +17,7 @@ public:
         }
 
     }
+    virtual int getMaxState() const { return 1; }
     
 };
 //conways
@@ -49,6 +50,8 @@ class BriansBrainRule : public basicAutomataRule {
 public:
     std::string getName() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;
+    std::array<float, 3> getDefaultColour(uint8_t state) override;
+    int getMaxState() const override;
 };
 //ulam-warburton
 class UlamWarburtonRule : public basicAutomataRule {
@@ -57,21 +60,50 @@ public:
     std::string getDefaultHood() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;
 };
+//mazectric
 class MazectricRule : public basicAutomataRule {
 public:
     std::string getName() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;
 };
+//ice balls
 class IceballsRule : public basicAutomataRule {
 public:
     std::string getName() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;
     std::array<float, 3> getDefaultColour(uint8_t state) override;
 };
+//star wars
+class StarWarsRule : public basicAutomataRule {
+public:
+    std::string getName() const override;
+    uint8_t apply(uint8_t currentState, int neighbours) override;
+    std::array<float, 3> getDefaultColour(uint8_t state) override;
+    int getMaxState() const override;
+};
+//Greenberg Hastings
+class GreenbergHastingsRule : public basicAutomataRule {
+public:
+    std::string getName() const override;
+    uint8_t apply(uint8_t currentState, int neighbours) override;
+    std::string getDefaultHood() const override;
+    std::array<float, 3> getDefaultColour(uint8_t state) override;
+    int getMaxState() const override;
+};
+//biham-middleton-levine traffic
 class BihamMiddletonLevineTrafficRule : public basicAutomataRule {
 public:
     std::string getName() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;
     std::array<float, 3> getDefaultColour(uint8_t state) override;
-    
+    int getMaxState() const override;
+
+};
+class WireWorldRule : public basicAutomataRule {
+public:
+    std::string getName() const override;
+    uint8_t apply(uint8_t currentState, int neighbours) override;
+    std::array<float, 3> getDefaultColour(uint8_t state) override;
+    int getMaxState() const override;
+
 };

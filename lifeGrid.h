@@ -47,3 +47,14 @@ public:
     void populate(float perc) override;
 };
 #endif
+class NagelSchreckenbergGrid : public lifeGrid {
+private:
+    //uint8_t velocity = 1;
+	int maxVelocity = 5;
+    float p = 0.5f;
+public:
+    NagelSchreckenbergGrid(int w, int h) : lifeGrid(w, h) {}
+    void update(basicAutomataRule* currentRule) override;
+    void calcNext(int x, int y);
+    void setMaxVelocity(int maxV);
+};
