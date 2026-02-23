@@ -46,7 +46,7 @@ public:
     void calcNext(int x, int y, bool goingRight);
     void populate(float perc) override;
 };
-#endif
+
 class NagelSchreckenbergGrid : public lifeGrid {
 private:
     //uint8_t velocity = 1;
@@ -58,3 +58,26 @@ public:
     void calcNext(int x, int y);
     void setMaxVelocity(int maxV);
 };
+class BrownianGrid : public lifeGrid {
+public:
+    BrownianGrid(int w, int h) : lifeGrid(w, h) {}
+    struct Walker {
+        int x, y;
+    };
+    void update(basicAutomataRule* currentRule) override;
+    void setCell(int x, int y, uint8_t v) override;
+    uint8_t calcNext(int walkerIndex);
+    //void populate(float perc) override;
+    void addNew();
+    void clear() override;
+    void populate(float perc) override;
+
+    
+
+private:
+    int neumannOffsets [4] = {1, -1, 1,-1};
+    
+    std::vector<Walker> activeWalkers;
+};
+
+#endif

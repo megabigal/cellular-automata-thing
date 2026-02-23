@@ -242,3 +242,105 @@ void NagelSchreckenbergGrid::update(basicAutomataRule* currentRule) {
 void NagelSchreckenbergGrid::setMaxVelocity(int maxV) {
     maxVelocity = maxV;
 }
+//brownian grid
+void BrownianGrid::update(basicAutomataRule* currentRule) {
+    if (!currentRule) return;
+   // std::fill(next.begin(), next.end(), 0);
+    for (int i = activeWalkers.size()-1; i >= 0; i--) {
+        for (int step = 0; step < 20; step++) {
+            if (calcNext(i)) {
+                //activeWalkers.erase(activeWalkers.begin() + i);
+                activeWalkers[i] = activeWalkers.back();//deletes a walker, faster than eras ebecause thats o(n)
+                activeWalkers.pop_back();
+                if (activeWalkers.size() == 0)
+                    addNew();
+                break;
+            }
+        }
+        
+    }
+    
+
+    
+    
+}
+uint8_t  BrownianGrid::calcNext(int walkerIndex) {
+    Walker walker = activeWalkers[walkerIndex];
+    int index = walker.y * width + walker.x;
+    int w = width;
+    if (walker.x > 0 && walker.x < w - 1 && walker.y > 0 && walker.y < height - 1) {
+        if ((grid[index - w - 1] | grid[index - w] | grid[index - w + 1] |
+            grid[index - 1] | grid[index + 1] |
+            grid[index + w - 1] | grid[index + w] | grid[index + w + 1]) & 1)
+        {
+            grid[index] = 1; //crystalise
+            return 1;
+        }
+    }
+    int dir = rand() & 3;
+    if (dir > 1) 
+        walker.y += neumannOffsets[dir];
+    else
+        walker.x += neumannOffsets[dir];
+    if (walker.x < 0) walker.x = width - 1;
+    else if (walker.x >= width ) walker.x = 0;
+    if (walker.y < 0) walker.y = height - 1;
+    else if (walker.y >= height ) walker.y = 0;
+    grid[index] = 0;
+
+    grid[walker.y * width + walker.x] = 2;
+    activeWalkers[walkerIndex] = walker;
+    return 0;
+}
+void BrownianGrid::addNew() {
+    Walker walker;
+
+    while (true){
+         walker.x= rand() % width;
+        walker.y = rand() % height;
+        if (grid[walker.y * width + walker.x] != 1) {
+            grid[walker.y * width + walker.x] = 2;
+            activeWalkers.push_back(walker);
+            return;
+        }
+        
+    }
+
+
+}
+void BrownianGrid::setCell(int x,int y,uint8_t v) {
+    if (x >= 0 && x < width && y >= 0 && y < height)
+    {//later add a check so only 1 gets added at a time
+        if (v == 1) {
+            grid[y * width + x] = v;
+        }
+        else if(v == 2) {
+            Walker w = { x,y };
+            grid[y * width + x] = v;
+            activeWalkers.push_back(w);
+        }
+        else {
+            grid[y * width + x] = v;
+        }
+    }
+        
+}
+void BrownianGrid::clear() {
+    activeWalkers.clear();
+    std::fill(grid.begin(), grid.end(), 0);
+}
+void BrownianGrid::populate(float perc) {
+    for (int y = 0; y <  height; y++) {
+        int currentY = y * width;
+        for (int x = 0; x < width; x++) {
+            if (((float)rand() / RAND_MAX < perc) && grid[currentY+x] == 0) {
+                Walker w = { x,y };
+                grid[currentY + x] = 2;
+                activeWalkers.push_back(w);
+
+            }
+        }
+        
+        
+    }
+}

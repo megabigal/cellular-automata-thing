@@ -20,6 +20,8 @@ GameEngine::GameEngine(unsigned int w, unsigned int h)
     rules.push_back(std::make_unique<IceballsRule>());
     rules.push_back(std::make_unique<StarWarsRule>());
 	rules.push_back(std::make_unique<GreenbergHastingsRule>());
+    rules.push_back(std::make_unique<WireWorldRule>());
+
     neighbourhood = gridMap->isMoore() ? "Moore" : "Neumann";
 }
 
@@ -52,6 +54,9 @@ void GameEngine::renderHelper(float dt) {
                 else if (ruleName == "Biham–Middleton–Levine traffic Model" && currentRuleIndex != i) {
                     gridMap = std::make_unique<BihamMiddletonLevineGrid>(window.getSize().x / 10, window.getSize().y / 10);
                     
+                }
+                else if (ruleName == "Diffusion-Limited-Aggregation" && currentRuleIndex != i) {
+                    gridMap = std::make_unique<BrownianGrid>(window.getSize().x / 10, window.getSize().y / 10);
                 }
                 currentRuleIndex = i;
                 gridMap->setHood(rules[currentRuleIndex]->getDefaultHood());
@@ -184,11 +189,14 @@ void GameEngine::changeMode(automataMenu a) {
         rules.push_back(std::make_unique<IceballsRule>());
         rules.push_back(std::make_unique<StarWarsRule>());
         rules.push_back(std::make_unique<GreenbergHastingsRule>());
+        rules.push_back(std::make_unique<WireWorldRule>());
+        
     }
     if (currentType == automataMenu::Odd2D) {
         gridMap = std::make_unique<BihamMiddletonLevineGrid>(window.getSize().x / 10, window.getSize().y / 10);
         rules.push_back(std::make_unique<BihamMiddletonLevineTrafficRule>());
         rules.push_back(std::make_unique<NagelSchreckenbergTrafficRule>());
+        rules.push_back(std::make_unique<DiffusionLimitedAggregationRule>());
 
     }
 

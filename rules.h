@@ -99,7 +99,26 @@ public:
     int getMaxState() const override;
 
 };
+//nagel-schreckenberg
+class NagelSchreckenbergTrafficRule : public basicAutomataRule {
+public:
+    std::string getName() const override;
+    uint8_t apply(uint8_t currentState, int neighbours) override;
+    std::array<float, 3> getDefaultColour(uint8_t state) override;
+    int getMaxState() const override;
+
+};
+//wireworld
 class WireWorldRule : public basicAutomataRule {
+public:
+    std::string getName() const override;
+    uint8_t apply(uint8_t currentState, int neighbours) override;
+    std::array<float, 3> getDefaultColour(uint8_t state) override;
+    int getMaxState() const override;
+
+};
+//diffusion limited aggregation
+class DiffusionLimitedAggregationRule : public basicAutomataRule {
 public:
     std::string getName() const override;
     uint8_t apply(uint8_t currentState, int neighbours) override;

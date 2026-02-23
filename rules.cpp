@@ -203,19 +203,52 @@ std::array<float, 3> NagelSchreckenbergTrafficRule::getDefaultColour(uint8_t sta
     }
 
 }
-
 int NagelSchreckenbergTrafficRule::getMaxState() const {
     return 5;
 }
 
+
+
+//wireworld
+std::string WireWorldRule::getName() const {
+    return "wire world";
+}
 int WireWorldRule::getMaxState() const {
     return 4;
 }
-int WireWorldRule::apply(uint8_t currentState, int neighbours) {
+uint8_t WireWorldRule::apply(uint8_t currentState, int neighbours) {
     if (currentState == 0) return 0;
     if (currentState == 1) return 2;
-    if (currentState == 2) return 3;
-    if (currentState == 3 && neighbours == 2 && neighbours == 1) return 1;
-    else return 3;
+    if (currentState == 2) return 4;
+    if (currentState == 4 && (neighbours == 2 || neighbours == 1)) return 1;
+    else return 4;
     return 0;
+}
+std::array<float, 3> WireWorldRule::getDefaultColour(uint8_t state) {
+    switch (state) {
+    case 1: return { 0.0f, 0.6f, 1.0f }; // Electron Head: Bright Blue
+    case 2: return { 1.0f, 0.2f, 0.2f }; // Electron Tail: Red
+    case 4: return { 1.0f, 0.8f, 0.0f }; // Conductor: Gold/Yellow
+    default: return { 0.0f, 0.0f, 0.0f }; // Empty: Black
+    }
+
+}
+//Diffusion-Limited-Aggregation 
+std::string DiffusionLimitedAggregationRule::getName() const {
+    return "Diffusion-Limited-Aggregation";
+}
+int DiffusionLimitedAggregationRule::getMaxState() const {
+    return 2;
+}
+uint8_t DiffusionLimitedAggregationRule::apply(uint8_t currentState, int neighbours) {
+    return currentState;
+}
+std::array<float, 3> DiffusionLimitedAggregationRule::getDefaultColour(uint8_t state) {
+    switch (state) {
+    case 1: return { 0.0f, 0.6f, 1.0f }; // Electron Head: Bright Blue
+    case 2: return { 1.0f, 0.2f, 0.2f }; // Electron Tail: Red
+    case 4: return { 1.0f, 0.8f, 0.0f }; // Conductor: Gold/Yellow
+    default: return { 0.0f, 0.0f, 0.0f }; // Empty: Black
+    }
+
 }
