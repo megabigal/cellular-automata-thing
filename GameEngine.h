@@ -23,6 +23,7 @@ private:
     float speed = 0.1f;
     float timer = 0.0f;
     float popValue = 0.2f;
+    int stepCount = 25;
     const float cellSize = 10.0f;
     int currentInput = 1;
     bool startTiming = false;

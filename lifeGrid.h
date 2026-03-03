@@ -14,6 +14,7 @@ protected:
     std::vector<uint8_t> next; //holds the next iteration
     bool useMoore = true;
     bool wrapping = true;
+	int stepCount = 25; // for diffusion limited aggregation,
 public:
     
     lifeGrid(int w, int h);
@@ -38,6 +39,8 @@ public:
 
     virtual void populate(float perc);
     virtual void invert();
+    virtual void clearWalkers(); //for diffusion limited aggregation
+    virtual void setStepCount(int steps);
 };
 class BihamMiddletonLevineGrid : public lifeGrid {
 public:
@@ -71,7 +74,7 @@ public:
     void addNew();
     void clear() override;
     void populate(float perc) override;
-
+    void clearWalkers();
     
 
 private:

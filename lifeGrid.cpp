@@ -33,6 +33,9 @@ void lifeGrid::setCell(int x, int y, uint8_t v) {
 void lifeGrid::clear() {
     std::fill(grid.begin(), grid.end(), 0);
 }
+void lifeGrid::clearWalkers(){
+    return;
+}
 
 //doesnt check diagnols
 int lifeGrid::countNeighboursVonNeumann(int x, int y) const {
@@ -247,7 +250,7 @@ void BrownianGrid::update(basicAutomataRule* currentRule) {
     if (!currentRule) return;
    // std::fill(next.begin(), next.end(), 0);
     for (int i = activeWalkers.size()-1; i >= 0; i--) {
-        for (int step = 0; step < 20; step++) {
+        for (int step = 0; step < stepCount; step++) {
             if (calcNext(i)) {
                 //activeWalkers.erase(activeWalkers.begin() + i);
                 activeWalkers[i] = activeWalkers.back();//deletes a walker, faster than eras ebecause thats o(n)
@@ -343,4 +346,13 @@ void BrownianGrid::populate(float perc) {
         
         
     }
+}
+void BrownianGrid::clearWalkers() {
+    activeWalkers.clear();
+    for (int i = 0; i < width * height; i++) {
+        if (grid[i] == 2) grid[i] = 0;
+    }
+}
+void lifeGrid::setStepCount(int steps) {
+	stepCount = steps;
 }

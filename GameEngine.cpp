@@ -111,7 +111,7 @@ void  GameEngine::render2DUI(float dt) {
     
     //ImGui::SliderInt("width", width, 0, 150);
   //  ImGui::SliderInt("height", width, 0, 150);
-    ImGui::ColorEdit3("Primary Color", &(userColour[0]));
+  //  ImGui::ColorEdit3("Primary Color", &(userColour[0]));
     static float values[90] = { 0 };
     static int values_offset = 0;
 
@@ -131,12 +131,24 @@ void  GameEngine::render1DUI(float dt) {
 }
 void  GameEngine::renderOdd2DUI(float dt) {
     renderHelper(dt);
-    if (ImGui::Button("car")) {
-        if (currentInput == 1)
-            currentInput = 2;
-        else
-            currentInput = 1;
+    std::string ruleName = rules[currentRuleIndex]->getName();
+    
+    if (ruleName == "Biham–Middleton–Levine traffic Model") {
+        if (ImGui::Button("car")) {
+            if (currentInput == 1)
+                currentInput = 2;
+            else
+                currentInput = 1;
+        }
     }
+    if (ruleName == "Diffusion-Limited-Aggregation") {
+        if (ImGui::Button("reset walkers")) {
+            gridMap->clearWalkers();
+        }
+        ImGui::SliderInt("stepCount", &stepCount, 0, 150);
+		gridMap->setStepCount(stepCount);
+    }
+    
     
     
 }
